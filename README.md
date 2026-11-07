@@ -4,6 +4,31 @@ Systemless Magisk module for the Solana Saga (gen 1). It fixes robotic, muffled,
 
 The microphone hardware is fine. Playback is fine. The problem is the vendor audio configuration: voice calls are routed through a dual mic Qualcomm Fluence endfire graph that does not calibrate correctly on the post OTA vendor image. This module routes normal earpiece calls through the single mic Fluence SMECNS graph instead, and lifts the transmit gain by 6 dB to make up for the level the second mic path was contributing.
 
+## Where the Saga sits: flagship versus mass market
+
+Think Model S and Model 3. Both are Teslas, both are electric, and both exist to push the same idea forward. One is the flagship that proves the idea at any price, the other is the mass market car that puts it in far more driveways. That is the Saga and the Seeker.
+
+The Saga (2023) is the Model S of the pair. Ceramic back, 6.67 inch 120 Hz OLED, Snapdragon 8+ Gen 1, 12 GB RAM, 512 GB storage, 50 MP main plus 12 MP ultrawide, 4110 mAh, and a $1,000 launch price. Premium materials, premium silicon, the best of everything OSOM and Solana Mobile could put in a phone at the time. It was a statement device.
+
+The Seeker (2025) is the Model 3. 6.36 inch 2670x1200 120 Hz AMOLED, MediaTek Dimensity 7300, 8 GB RAM, 128 GB storage, 108 MP main, plastic frame, 4500 mAh, and $500 ($450 at preorder). It is not trying to out spec the Saga. It is trying to get Seed Vault into many more hands at a price that makes saying yes easy.
+
+| | Saga (Model S energy) | Seeker (Model 3 energy) |
+| --- | --- | --- |
+| Year | 2023 | 2025 |
+| Price | $1,000 | $500 |
+| SoC | Snapdragon 8+ Gen 1 | MediaTek Dimensity 7300 |
+| Memory | 12 GB / 512 GB | 8 GB / 128 GB |
+| Display | 6.67 in OLED, 120 Hz | 6.36 in AMOLED, 120 Hz |
+| Body | Ceramic back | Plastic frame |
+| Cameras | 50 MP + 12 MP | 108 MP + 50 MP + 13 MP, 32 MP front |
+| Battery | 4110 mAh | 4500 mAh |
+| Seed Vault | Yes | Yes |
+
+What they share is the point. Both ship Seed Vault. Both are built for people who would rather hold their own keys than trust an exchange, and both push mobile crypto past the "install an app and hope" era the way EVs pushed past gas cars. Different tier, same thesis, same crowd: forward thinkers who want the thing to actually exist rather than wait for it.
+
+### Why this module is Saga only
+
+The Seeker runs a MediaTek Dimensity 7300 with an entirely different vendor audio stack, so none of the files in this module exist on it. This fix targets the Qualcomm `sku_taro` config on the Saga gen 1, which is where the earpiece call routing actually lives. The Saga versus Seeker comparison is about tier, materials, and silicon. It has nothing to do with the mic bug. The mic bug is a vendor graph mapping problem on the Saga's post OTA image, and it would be a mapping problem on a $1,000 phone or a $300 phone running the same config.
 
 ## What it changes
 
