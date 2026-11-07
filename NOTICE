@@ -1,0 +1,14 @@
+This repository mixes two kinds of material.
+
+1. Module packaging, the build script, documentation, and update.json
+   Copyright (c) 2026 rasetsukyo. Licensed under the MIT License, see LICENSE.
+
+2. Vendor audio configuration files under system/
+   These are Qualcomm and OSOM vendor configuration files, redistributed here
+   unmodified except for the specific values documented in the README. They
+   carry their own BSD style copyright and permission notices in their file
+   headers, and those terms govern them. The MIT license above does not extend
+   to these files and does not replace their notices.
+
+If you redistribute this module, keep the header notices in the vendor files
+intact and keep this NOTICE with the copy.
