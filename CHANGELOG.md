@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Corrected the chain naming in the docs. `0xAD00000F` is `DEVICEPP_TX_VOICE_FLUENCE_NN`, the neural network chain, not SMECNS. The classic single mic voice call chain is `0xAD000008`. Behavior is unchanged, the audio still comes from `0xAD00000F`.
+- `module.prop` and the comment inside the shipped `usecaseKvManager.xml` still carry the old SMECNS label. They change on the next packaging release so the published zip hash stays valid.
+
 ## v1.3
 
 - Speakerphone calls now drive both WSA amps. `voice-speaker` and `voice-speaker-protected` route to `speaker` instead of `speaker-mono`, `voice-speaker-protected` gains the `WSA_SPKR_VI_2` mixer control, and `voice-speaker-protected-vbat` enables the second amp's VBAT line.

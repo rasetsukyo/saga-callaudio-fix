@@ -2,7 +2,7 @@
 
 Systemless Magisk module for the Solana Saga (gen 1). It fixes robotic, muffled, and distorted outgoing voice during earpiece calls on stock firmware, and makes speakerphone calls drive both loudspeaker amps instead of the left one.
 
-The microphone hardware is fine. Playback is fine. The problem is the vendor audio configuration: after the OTA, normal earpiece calls route through the dual mic Qualcomm Fluence endfire graph, and the far end gets a thin, robotic, watery version of your voice. This module routes that default voice call route through the single mic Fluence SMECNS graph instead, and lifts the transmit gain by 6 dB to make up for the level the second mic path was contributing.
+The microphone hardware is fine. Playback is fine. The problem is the vendor audio configuration: after the OTA, normal earpiece calls route through the dual mic Qualcomm Fluence endfire graph, and the far end gets a thin, robotic, watery version of your voice. This module routes that default voice call route through the Fluence neural network chain (`DEVICEPP_TX_VOICE_FLUENCE_NN`, `0xAD00000F`) on the single channel capture profile the device actually opens, and lifts the transmit gain by 6 dB to make up for the level the second mic path was contributing.
 
 **Tested on:** OSOM Android 14, incremental 165.
 
@@ -14,24 +14,35 @@ The regression showed up with the post OTA vendor image. Nothing here is claimed
 
 No further firmware is coming. OSOM ceased operations in September 2024 and Solana Mobile ended Saga software support in October 2025, so this is a preservation patch, not a stopgap until the next build.
 
-**About the evidence.** The diagnosis comes from the symptom plus the vendor config, not from a captured HAL trace. The measurable parts are the mapping (`0xAD000009` versus `0xAD00000F`), the config diff against stock, and before and after call recordings. The 6 dB is the one number that was picked by ear on a single unit, and [Tuning the gain](#tuning-the-gain) covers how to move it.
+**About the evidence.** The diagnosis comes from the symptom plus the vendor config, not from a captured HAL trace. The measurable parts are the mapping (`0xAD000009` endfire versus `0xAD00000F` Fluence NN), the config diff against stock, and before and after call recordings. The 6 dB is the one number that was picked by ear on a single unit, and [Tuning the gain](#tuning-the-gain) covers how to move it.
 
 ## What it changes
 
 Two functional changes, both at the vendor audio config layer.
 
-### 1. Voice call uplink: endfire to SMECNS
+### 1. Voice call uplink: endfire to Fluence NN
 
 `system/vendor/etc/usecaseKvManager.xml`, device `PAL_DEVICE_IN_HANDSET_MIC`, stream `PAL_STREAM_VOICE_CALL`:
 
 ```xml
 <!-- before: DEVICEPP_TX_VOICE_FLUENCE_ENDFIRE -->
 <graph_kv key="0xAD000000" value="0xAD000009"/>
-<!-- after: DEVICEPP_TX_VOICE_FLUENCE_SMECNS -->
+<!-- after: DEVICEPP_TX_VOICE_FLUENCE_NN -->
 <graph_kv key="0xAD000000" value="0xAD00000F"/>
 ```
 
 The explicit `CustomConfig="dual-mic"` route still points at the endfire graph, so anything that asks for dual mic behavior keeps it. Only the default voice call route moves.
+
+**Naming correction.** `0xAD00000F` is not SMECNS. Qualcomm's `kvh2xml.h` names it `DEVICEPP_TX_VOICE_FLUENCE_NN`, described as "Fluence NN in voice call, single and dual mic", and this build ships the matching models in `/vendor/etc/acdbdata/nn_ns_models/` (`fai__*.pmd`). The classic single mic voice call chain is `0xAD000008`, `DEVICEPP_TX_VOICE_FLUENCE_SMECNS`, which is untested here. So the module moves calls from endfire beamforming to neural network noise suppression on a mono capture, not to classic SMECNS. Earlier notes and the v1.1 changelog got this label wrong.
+
+Chains that exist for this device, for reference:
+
+| value | chain | status |
+| --- | --- | --- |
+| `0xAD000009` | `VOICE_FLUENCE_ENDFIRE`, dual mic ECNS | stock default, robotic on this build |
+| `0xAD00000F` | `VOICE_FLUENCE_NN`, NN noise suppression, single and dual mic | shipped here |
+| `0xAD000008` | `VOICE_FLUENCE_SMECNS`, classic single mic ECNS | untested |
+| `0xAD00001C` | `VOICE_FLUENCE_NN_DM`, dual mic NN | untested, needs the two channel capture profile |
 
 ### 2. Transmit gain +6 dB
 
@@ -68,7 +79,7 @@ system/vendor/etc/usecaseKvManager.xml
 
 Two of those are changed:
 
-- `usecaseKvManager.xml`: the SMECNS mapping above.
+- `usecaseKvManager.xml`: the Fluence NN mapping above.
 - `mixer_paths_waipio_ingot.xml`: the two `TX_DEC2` values and the three speaker paths above.
 
 `resourcemanager_waipio_ingot.xml` is included unmodified from the same vendor image, and changes nothing functionally. It ships so the module carries the `sku_taro` config set from the same incremental rather than a mix of files from different builds. If you prefer a smaller module, it can be dropped without affecting the fix.
@@ -110,7 +121,7 @@ Make sure `su` is granted for Termux in Magisk before the install line. The rebo
 adb shell 'su -c "grep -c \"was ENDFIRE\" /vendor/etc/usecaseKvManager.xml"'
 ```
 
-That should print 1, which means the SMECNS mapping is live.
+That should print 1, which means the voice call mapping is live.
 
 ```bash
 adb shell 'su -c "grep -c \"Saga call-audio fix\" /vendor/etc/audio/sku_taro/mixer_paths_waipio_ingot.xml"'
