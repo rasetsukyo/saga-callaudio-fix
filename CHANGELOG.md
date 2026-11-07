@@ -7,6 +7,7 @@
 - Documented the full scope of the gain change: video recording inherits it via `camcorder-mic`, VoIP likely does, `handset-mic-unprocessed` does not.
 - Explained why `resourcemanager_waipio_ingot.xml` is in the module (unmodified stock, same incremental, changes nothing).
 - Moved the Saga versus Seeker context to the bottom and cut the marketing line.
+- Reframed OTA behavior as firmware support being over: OSOM ceased operations in September 2024 and Solana Mobile ended Saga support in October 2025, so the whole-file replacement has no future firmware left to mask. Custom vendor images are the only remaining caveat.
 - Added `update.json` so Magisk reports updates.
 - Added MIT license for packaging, docs, and build script, plus NOTICE for the BSD licensed vendor files.
 - The built zip is no longer committed; releases carry the versioned asset.

@@ -12,6 +12,8 @@ ro.build.fingerprint = OSOM/ingot/ingot:14/UKQ1.240227.165/165:user/release-keys
 
 The regression showed up with the post OTA vendor image. Nothing here is claimed about other builds: if you are on a different incremental, check whether the two values under [What it changes](#what-it-changes) are still what your vendor image ships before flashing.
 
+No further firmware is coming. OSOM ceased operations in September 2024 and Solana Mobile ended Saga software support in October 2025, so this is a preservation patch, not a stopgap until the next build.
+
 **About the evidence.** The diagnosis comes from the symptom plus the vendor config, not from a captured HAL trace. The measurable parts are the mapping (`0xAD000009` versus `0xAD00000F`), the config diff against stock, and before and after call recordings. The 6 dB is the one number that was picked by ear on a single unit, and [Tuning the gain](#tuning-the-gain) covers how to move it.
 
 ## What it changes
@@ -61,7 +63,7 @@ Two of those are changed:
 
 `resourcemanager_waipio_ingot.xml` is included unmodified from the same vendor image, and changes nothing functionally. It ships so the module carries the `sku_taro` config set from the same incremental rather than a mix of files from different builds. If you prefer a smaller module, it can be dropped without affecting the fix.
 
-All three files are replaced as a set at boot, which is covered under [OTA behavior](#ota-behavior).
+All three files are replaced as a set at boot, which is covered under [Firmware support is over](#firmware-support-is-over).
 
 ## Requirements
 
@@ -132,13 +134,15 @@ adb reboot
 
 If the device will not boot, hold volume down while the boot animation is showing to enter Magisk safe mode, which disables modules. Then delete `/data/adb/modules/saga_callaudio_fix` and reboot.
 
-## OTA behavior
+## Firmware support is over
 
-The module lives systemless in `/data/adb/modules` and mounts over `/system/vendor` at boot, so a vendor OTA does not remove it and the overlay wins.
+The Saga shipped on OSOM's Android 14 build and stops there. OSOM ceased operations in September 2024, and in October 2025 Solana Mobile told its community that the Saga had reached the end of its support lifecycle. There is no further firmware, no security patch, and no vendor config fix coming from either company. That is the whole reason this module exists: the bug was never going to be patched upstream, so the patch had to come from owners.
 
-That is also the tradeoff: the module replaces whole files, so if a later OTA changes something else inside these three files, the module's copies mask that change silently. There is no clean way to detect it from the running system, because the overlay is what you would be comparing against. If you take an OTA, re-check the two values under [What it changes](#what-it-changes) against your new vendor image before flashing, and watch Releases for a rebuild against the newer incremental.
+It also retires the usual objection to a whole-file replacement. The module ships three files pulled from incremental 165 and mounts them over `/system/vendor` at boot, which means it masks whatever the stock image has underneath. Normally that is a real risk, because a later OTA could change something else inside those files and the overlay would hide it. Here there are no later OTAs. The stock files are frozen at 165, the module's copies are pinned to that same build, and the masking has nothing left to hide.
 
-Magisk update notifications are wired up through `update.json`, so a rebuild shows up in the Modules list.
+The one case that still needs care is custom firmware. A community ROM, a ported vendor image, or anything that is not stock 165 may carry different values in these files. Check the two values under [What it changes](#what-it-changes) against your vendor image before flashing, and do not assume this module matches it.
+
+Magisk update notifications are wired up through `update.json`, so if the packaging or docs are revised the Modules list will show it.
 
 ## Notes
 
