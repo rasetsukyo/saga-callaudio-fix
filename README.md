@@ -116,6 +116,8 @@ The value is `TX_DEC2 Volume` in the mixer path. Stock is 84, this module uses 9
 
 Changing only `handset-mic` leaves loudspeaker calls alone, and the reverse.
 
+If speakerphone sounds hot, set the `speaker-mic` value back to 84 and keep `handset-mic` at 90.
+
 ## Rollback
 
 Disable it in the Magisk app and reboot, or:
@@ -156,6 +158,8 @@ Magisk update notifications are wired up through `update.json`, so if the packag
 ```bash
 ./build.sh
 ```
+
+Clone the repo first. `./build.sh` packs the working copy, so it needs the checkout, not just the downloaded zip.
 
 That packs `module.prop` and `system/` into `saga-callaudio-fix.zip`. The zip is not committed, releases carry the versioned copy.
 
