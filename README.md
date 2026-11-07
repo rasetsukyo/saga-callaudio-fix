@@ -1,6 +1,6 @@
 # Saga Call Audio Fix
 
-Systemless Magisk module for the Solana Saga (gen 1). It fixes robotic, muffled, and distorted outgoing voice during earpiece calls on stock firmware.
+Systemless Magisk module for the Solana Saga (gen 1). It fixes robotic, muffled, and distorted outgoing voice during earpiece calls on stock firmware, and makes speakerphone calls drive both loudspeaker amps instead of the left one.
 
 The microphone hardware is fine. Playback is fine. The problem is the vendor audio configuration: after the OTA, normal earpiece calls route through the dual mic Qualcomm Fluence endfire graph, and the far end gets a thin, robotic, watery version of your voice. This module routes that default voice call route through the single mic Fluence SMECNS graph instead, and lifts the transmit gain by 6 dB to make up for the level the second mic path was contributing.
 
@@ -47,6 +47,16 @@ The explicit `CustomConfig="dual-mic"` route still points at the endfire graph, 
 
 The stock default for `TX_DEC2` in this config is 84. 90 is +6 dB on the QTI DEC volume scale, where 84 is the 0 dB reference and each step is 1 dB. Dropping the second microphone drops the level it was adding, so the gain brings the single mic path back up to a usable level. That level was chosen by ear on one unit, not measured against a reference recording.
 
+### 3. Speakerphone: both WSA amps
+
+Still in `mixer_paths_waipio_ingot.xml`, three voice speaker paths sent speakerphone audio to `speaker-mono`, which lights up one amplifier and leaves the other idle:
+
+- `voice-speaker`: routes to `speaker` instead of `speaker-mono`
+- `voice-speaker-protected`: sets `WSA_AIF_VI Mixer WSA_SPKR_VI_2` and routes to `speaker`, alongside the `VI_1` control it already had
+- `voice-speaker-protected-vbat`: also enables `WSA_RX INT1 VBAT WSA RX1 VBAT Enable`
+
+Both amplifiers now run for a speakerphone call. The mono path still exists in the config, it is simply not the one the voice streams select any more.
+
 ## Files in the module
 
 ```
@@ -59,7 +69,7 @@ system/vendor/etc/usecaseKvManager.xml
 Two of those are changed:
 
 - `usecaseKvManager.xml`: the SMECNS mapping above.
-- `mixer_paths_waipio_ingot.xml`: the two `TX_DEC2` values above.
+- `mixer_paths_waipio_ingot.xml`: the two `TX_DEC2` values and the three speaker paths above.
 
 `resourcemanager_waipio_ingot.xml` is included unmodified from the same vendor image, and changes nothing functionally. It ships so the module carries the `sku_taro` config set from the same incremental rather than a mix of files from different builds. If you prefer a smaller module, it can be dropped without affecting the fix.
 
@@ -87,8 +97,8 @@ adb pair 127.0.0.1:PAIR_PORT
 adb connect 127.0.0.1:CONNECT_PORT
 adb devices
 
-adb push ~/storage/downloads/saga-callaudio-fix-v1.2.zip /sdcard/Download/
-adb shell su -c 'magisk --install-module /sdcard/Download/saga-callaudio-fix-v1.2.zip'
+adb push ~/storage/downloads/saga-callaudio-fix-v1.3.zip /sdcard/Download/
+adb shell su -c 'magisk --install-module /sdcard/Download/saga-callaudio-fix-v1.3.zip'
 adb reboot
 ```
 
@@ -150,6 +160,7 @@ Magisk update notifications are wired up through `update.json`, so if the packag
 
 - **The +6 dB is not call-only.** `handset-mic` is the base path for any handset mic capture, so other consumers inherit it. Confirmed inherited: video recording, because `camcorder-mic` includes `handset-mic`. Likely inherited: voice recorder and VoIP apps, depending on which input path they select. `handset-mic-unprocessed` is separate and untouched at its stock value of 102.
 - Loudspeaker calls also get the +6 dB, because `speaker-mic` uses the same `TX_DEC2` value.
+- Speakerphone now drives both WSA amps. The `speaker-mono` path still exists in the config, it is just no longer what the voice streams select.
 - Bluetooth and USB call audio are untouched.
 - The files under `system/` are Qualcomm and OSOM vendor configs and carry the BSD terms in their headers. The module packaging, the build script, and these docs are MIT licensed, see [LICENSE](LICENSE) and [NOTICE](NOTICE).
 

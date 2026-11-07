@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3
+
+- Speakerphone calls now drive both WSA amps. `voice-speaker` and `voice-speaker-protected` route to `speaker` instead of `speaker-mono`, `voice-speaker-protected` gains the `WSA_SPKR_VI_2` mixer control, and `voice-speaker-protected-vbat` enables the second amp's VBAT line.
+- Module name, description, version and update manifest move to v1.3.
+- The mixer config is now byte identical to the build running on the test device, sha256 `abdf541fc6130c1c25eeeda0a61dd3100880d80807b6a0d4105cb30db576dea4`.
+- Untracked an editor lock file that had been committed by mistake.
+
 ## v1.2
 
 - Documented the tested build: OSOM Android 14, incremental 165 (`UKQ1.240227.165`).

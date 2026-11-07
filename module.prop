@@ -1,7 +1,7 @@
 id=saga_callaudio_fix
-name=Saga Call Audio Fix (single-mic earpiece calls)
-version=v1.2
-versionCode=3
+name=Saga Call Audio Fix (single-mic earpiece + stereo speakerphone)
+version=v1.3
+versionCode=4
 author=rasetsukyo
-description=Ear piece calls: dual-mic endfire fluence -> single-mic SMECNS. Fixes robotic/muffled outgoing voice after OTA.
+description=Earpiece: dual-mic endfire fluence to single-mic SMECNS, +6 dB. Speakerphone: both WSA amps instead of the left one only.
 updateJson=https://raw.githubusercontent.com/rasetsukyo/saga-callaudio-fix/main/update.json
