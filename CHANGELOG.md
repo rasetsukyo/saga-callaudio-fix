@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## v1.4
 
-- Corrected the chain naming in the docs. `0xAD00000F` is `DEVICEPP_TX_VOICE_FLUENCE_NN`, the neural network chain, not SMECNS. The classic single mic voice call chain is `0xAD000008`. Behavior is unchanged, the audio still comes from `0xAD00000F`.
-- `module.prop` and the comment inside the shipped `usecaseKvManager.xml` still carry the old SMECNS label. They change on the next packaging release so the published zip hash stays valid.
+- Label correction only, no audio change. The chain at `0xAD00000F` is `DEVICEPP_TX_VOICE_FLUENCE_NN`, the neural network chain, not SMECNS. The classic single mic voice call chain is `0xAD000008`. The audio path is byte for byte the v1.3 audio path.
+- `module.prop` description and the in-file comment in `usecaseKvManager.xml` now name the chain correctly.
+- Documents the chain table in the README, including the untested `0xAD000008` SMECNS and `0xAD00001C` dual mic NN variants.
 
 ## v1.3
 

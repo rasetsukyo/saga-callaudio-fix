@@ -33,7 +33,7 @@ Two functional changes, both at the vendor audio config layer.
 
 The explicit `CustomConfig="dual-mic"` route still points at the endfire graph, so anything that asks for dual mic behavior keeps it. Only the default voice call route moves.
 
-**Naming correction.** `0xAD00000F` is not SMECNS. Qualcomm's `kvh2xml.h` names it `DEVICEPP_TX_VOICE_FLUENCE_NN`, described as "Fluence NN in voice call, single and dual mic", and this build ships the matching models in `/vendor/etc/acdbdata/nn_ns_models/` (`fai__*.pmd`). The classic single mic voice call chain is `0xAD000008`, `DEVICEPP_TX_VOICE_FLUENCE_SMECNS`, which is untested here. So the module moves calls from endfire beamforming to neural network noise suppression on a mono capture, not to classic SMECNS. Earlier notes and the v1.1 changelog got this label wrong.
+**Naming correction.** `0xAD00000F` is not SMECNS. Qualcomm's `kvh2xml.h` names it `DEVICEPP_TX_VOICE_FLUENCE_NN`, described as "Fluence NN in voice call, single and dual mic", and this build ships the matching models in `/vendor/etc/acdbdata/nn_ns_models/` (`fai__*.pmd`). The classic single mic voice call chain is `0xAD000008`, `DEVICEPP_TX_VOICE_FLUENCE_SMECNS`, which is untested here. So the module moves calls from endfire beamforming to neural network noise suppression on a mono capture, not to classic SMECNS. Earlier notes and the v1.1 changelog got this label wrong. v1.4 is a packaging release that fixes the label in `module.prop` and in the vendor file comment. The audio path is unchanged from v1.3.
 
 Chains that exist for this device, for reference:
 

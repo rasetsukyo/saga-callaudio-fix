@@ -1,7 +1,7 @@
 id=saga_callaudio_fix
 name=Saga Call Audio Fix (single-mic earpiece + stereo speakerphone)
-version=v1.3
-versionCode=4
+version=v1.4
+versionCode=5
 author=rasetsukyo
-description=Earpiece: dual-mic endfire fluence to single-mic SMECNS, +6 dB. Speakerphone: both WSA amps instead of the left one only.
+description=Earpiece: dual-mic endfire fluence to Fluence NN on mono capture, +6 dB. Speakerphone: both WSA amps instead of the left one only.
 updateJson=https://raw.githubusercontent.com/rasetsukyo/saga-callaudio-fix/main/update.json
