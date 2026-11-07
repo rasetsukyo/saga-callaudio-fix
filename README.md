@@ -4,7 +4,6 @@ Systemless Magisk module for the Solana Saga (gen 1). It fixes robotic, muffled,
 
 The microphone hardware is fine. Playback is fine. The problem is the vendor audio configuration: voice calls are routed through a dual mic Qualcomm Fluence endfire graph that does not calibrate correctly on the post OTA vendor image. This module routes normal earpiece calls through the single mic Fluence SMECNS graph instead, and lifts the transmit gain by 6 dB to make up for the level the second mic path was contributing.
 
-Model S vs Model 3 energy: nothing is physically broken, the tuning is just wrong.
 
 ## What it changes
 
